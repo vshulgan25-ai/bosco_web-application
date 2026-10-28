@@ -1,0 +1,29 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Особистий кабінет{% endblock %}
+{% block content %}
+<h1>Особистий кабінет</h1>
+<div class="profile-head">{% include "scholarships/_avatar.html" with profile=user.profile size="xl" %}
+<div><strong>{{ user.profile.full_name }}</strong> <a href="{% url 'profile' %}" class="muted">змінити фото</a></div></div>
+<p class="muted">{{ user.get_full_name|default:user.username }}{% if user.profile.group %} · група {{ user.profile.group }}{% endif %}{% if user.profile.course %} · {{ user.profile.course }} курс{% endif %}</p>
+
+{% if pending %}
+<div class="notice warn"><strong>Заявки на розгляді:</strong>
+  {% for c in pending %}{{ c.program.name }}{% if not forloop.last %}, {% endif %}{% endfor %}.
+  Результати будуть оголошені <strong>{{ pending.0.application.period.results_date|date:"d E Y" }}</strong>.</div>
+{% endif %}
+
+<h2>Мої стипендії</h2>
+{% if scholarships %}
+<div class="grid">
+  {% for s in scholarships %}
+  <div class="card">
+    <h3>{{ s.program.name }}</h3>
+    <p class="muted">{% if s.sponsor %}Засновник: {{ s.sponsor }}<br>{% endif %}{{ s.academic_year }} · призначено {{ s.issued_at|date:"d.m.Y" }}</p>
+    <p class="big">{{ s.amount|floatformat:"-2" }} грн <span class="muted" style="font-size:.95rem;font-weight:400">{{ s.program.amount_note }}</span></p>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="notice">Стипендій поки немає. Після оголошення результатів вони з’являться тут.</div>
+{% endif %}
+{% endblock %}

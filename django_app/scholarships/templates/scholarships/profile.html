@@ -1,0 +1,11 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Профіль{% endblock %}
+{% block content %}
+<h1>Мій профіль</h1>
+<div class="card form-box">
+  <div class="profile-head">{% include "scholarships/_avatar.html" with profile=profile size="xl" %}
+    <div><strong>{{ profile.full_name }}</strong><div class="muted">{% if profile.group %}група {{ profile.group }}{% endif %}{% if profile.course %} · {{ profile.course }} курс{% endif %}</div></div></div>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button class="btn" type="submit">Зберегти</button></form>
+  <p class="muted">Фото відображається у вашому кабінеті та в списку стипендіатів. Підійде JPG або PNG.</p>
+</div>
+{% endblock %}

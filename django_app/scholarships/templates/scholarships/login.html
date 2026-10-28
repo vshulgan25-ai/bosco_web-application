@@ -1,0 +1,10 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Вхід{% endblock %}
+{% block content %}
+<h1>Вхід до системи</h1>
+<div class="card form-box">
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn" type="submit">Увійти</button></form>
+  <p class="muted">Немає акаунта? <a href="{% url 'register' %}">Зареєструватися</a></p>
+  <p class="muted">Адміністратор та члени комісії входять тут же — вас буде перенаправлено до панелі адміністратора.</p>
+</div>
+{% endblock %}

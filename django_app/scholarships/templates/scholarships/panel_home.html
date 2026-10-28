@@ -1,0 +1,42 @@
+{% extends "scholarships/base.html" %}
+{% block title %}{% if user.is_superuser %}Панель адміністратора{% else %}Панель модератора{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if user.is_superuser %}Панель адміністратора{% else %}Панель модератора{% endif %}</h1>
+<p class="muted">Розгляд заявок і публікація результатів.</p>
+
+<div class="grid">
+  <div class="card stat"><span class="big">{{ stats.applications }}</span>заявок подано</div>
+  <div class="card stat"><span class="big">{{ stats.pending }}</span>рішень очікують</div>
+  <div class="card stat"><span class="big">{{ stats.approved }}</span>схвалено</div>
+  <div class="card stat"><span class="big">{{ stats.rejected }}</span>відхилено</div>
+  <div class="card stat"><span class="big">{{ stats.students }}</span>учнів у системі</div>
+  <div class="card stat"><span class="big">{{ stats.scholarships }}</span>активних стипендій</div>
+</div>
+
+<h2>Заявки, що очікують рішення</h2>
+{% if latest %}
+<div class="scroll"><table>
+  <tr><th>Учень</th><th>Група</th><th>Стипендії</th><th>Подано</th><th></th></tr>
+  {% for a in latest %}
+  <tr><td>{{ a.student.get_full_name|default:a.student.username }}</td><td>{{ a.student.profile.group }}</td>
+    <td>{{ a.programs_text }}</td><td>{{ a.submitted_at|date:"d.m.Y" }}</td>
+    <td><a class="btn sm" href="{% url 'panel_application_detail' a.pk %}">Розглянути</a></td></tr>
+  {% endfor %}
+</table></div>
+<p><a href="{% url 'panel_applications' %}">Усі заявки →</a></p>
+{% else %}<p class="muted">Немає заявок, що очікують рішення.</p>{% endif %}
+
+<h2>Набори та публікація результатів</h2>
+<p class="muted">Учні бачать рішення комісії лише після публікації результатів (за графіком — у день оголошення).</p>
+<div class="scroll"><table>
+  <tr><th>Набір</th><th>Прийом заявок</th><th>Оголошення</th><th>Результати для учнів</th><th></th></tr>
+  {% for p in periods %}
+  <tr><td>{{ p.title }}</td><td>{{ p.start_date|date:"d.m.Y" }} – {{ p.end_date|date:"d.m.Y" }}</td><td>{{ p.results_date|date:"d.m.Y" }}</td>
+    <td>{% if p.results_published %}<span class="badge approved">Опубліковано</span>{% else %}<span class="badge pending">Приховано</span>{% endif %}</td>
+    <td>{% if user.is_superuser %}<form method="post" class="inline">{% csrf_token %}<input type="hidden" name="period_id" value="{{ p.pk }}">
+      {% if p.results_published %}<button class="btn sm sec" name="action" value="unpublish">Приховати</button>
+      {% else %}<button class="btn sm" name="action" value="publish">Опублікувати результати</button>{% endif %}</form>{% else %}<span class="muted">лише адміністратор</span>{% endif %}</td></tr>
+  {% endfor %}
+</table></div>
+{% if user.is_superuser %}<p class="muted">Налаштування наборів, програм, стипендій та облікових записів: <a href="{% url 'admin:index' %}">Django-адмінка</a>.</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Подати заявку{% endblock %}
+{% block content %}
+<h1>Заявка на стипендію</h1>
+{% if not period %}
+  <div class="notice warn">Зараз прийом заявок закритий. Заявки приймаються з 1 вересня до 24 грудня.</div>
+{% else %}
+  <p class="muted">{{ period.title }} · прийом до {{ period.end_date|date:"d.m.Y" }} · результати: {{ period.results_date|date:"d.m.Y" }}</p>
+  <div class="card form-box">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div class="checks"><label>{{ form.programs.label }}</label>{{ form.programs.errors }}{{ form.programs }}</div>
+      <p style="margin-top:14px"><label for="{{ form.motivation.id_for_label }}">Мотиваційний лист</label>{{ form.motivation.errors }}{{ form.motivation }}</p>
+      <h3>Портфоліо</h3>
+      <p class="muted">Додайте до трьох документів: грамоти, сертифікати, проєкти (PDF, JPG, PNG…).</p>
+      {{ formset.management_form }}
+      {% for f in formset %}<div class="port-row">{{ f.as_p }}</div>{% endfor %}
+      <button class="btn" type="submit">Надіслати заявку</button>
+    </form>
+  </div>
+{% endif %}
+{% endblock %}

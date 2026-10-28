@@ -1,0 +1,9 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Реєстрація{% endblock %}
+{% block content %}
+<h1>Реєстрація учня</h1>
+<div class="card form-box">
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn" type="submit">Зареєструватися</button></form>
+  <p class="muted">Вже є акаунт? <a href="{% url 'login' %}">Увійти</a></p>
+</div>
+{% endblock %}

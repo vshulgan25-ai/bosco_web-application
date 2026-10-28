@@ -1,0 +1,14 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Стипендії учнів{% endblock %}
+{% block content %}
+<h1>Призначені стипендії</h1>
+<form method="get" class="filters"><input type="text" name="q" value="{{ q }}" placeholder="Прізвище, ім'я…"><button class="btn sm" type="submit">Знайти</button></form>
+<div class="scroll"><table>
+  <tr><th></th><th>Учень</th><th>Група</th><th>Стипендія</th><th>Засновник</th><th>Сума</th><th>Витрачено</th><th>Залишок</th><th></th></tr>
+  {% for s in scholarships %}
+  <tr><td class="ava">{% include "scholarships/_avatar.html" with profile=s.student.profile size="" %}</td><td>{{ s.student.profile.full_name }}</td><td>{{ s.student.profile.group }}</td><td>{{ s.program.name }}</td><td>{{ s.sponsor|default:"—" }}</td>
+    <td>{{ s.amount|floatformat:2 }}</td><td>{{ s.spent|floatformat:2 }} {{ s.window_label }}</td><td>{{ s.balance|floatformat:2 }} {{ s.window_label }}</td>
+    <td><a class="btn sm" href="{% url 'panel_scholarship_detail' s.pk %}">Облік</a></td></tr>
+  {% empty %}<tr><td colspan="9" class="muted">Стипендій ще немає. Схваліть заявки, і вони з’являться тут.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

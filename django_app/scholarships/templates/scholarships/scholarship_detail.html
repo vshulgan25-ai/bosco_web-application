@@ -1,0 +1,19 @@
+{% extends "scholarships/base.html" %}
+{% block title %}{{ scholarship.program.name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'dashboard' %}">← До кабінету</a></p>
+<h1>{{ scholarship.program.name }}</h1>
+<p class="muted">{{ scholarship.academic_year }} · призначено {{ scholarship.issued_at|date:"d.m.Y" }}</p>
+<div class="card">
+  <div class="nums"><span>Призначено{% if scholarship.is_daily %} на день{% endif %}: <strong>{{ scholarship.amount|floatformat:2 }} грн</strong></span><span>Витрачено {{ scholarship.window_label }}: <strong>{{ scholarship.spent|floatformat:2 }} грн</strong></span><span>Залишок {{ scholarship.window_label }}: <strong>{{ scholarship.balance|floatformat:2 }} грн</strong></span></div>
+  <div class="bar"><div style="width:{{ scholarship.percent_used }}%"></div></div>
+  {% if scholarship.is_daily %}<div class="muted">Усього витрачено за весь час: {{ scholarship.spent_total|floatformat:2 }} грн</div>{% endif %}
+</div>
+<h2>Історія витрат</h2>
+{% if transactions %}
+<div class="scroll"><table>
+  <tr><th>Дата</th><th>Опис</th><th>К-сть</th><th>Сума</th></tr>
+  {% for t in transactions %}<tr><td>{{ t.created_at|date:"d.m.Y H:i" }}</td><td>{{ t.description }}</td><td>{{ t.quantity }}</td><td>{{ t.amount|floatformat:2 }} грн</td></tr>{% endfor %}
+</table></div>
+{% else %}<p class="muted">Витрат ще не було.</p>{% endif %}
+{% endblock %}

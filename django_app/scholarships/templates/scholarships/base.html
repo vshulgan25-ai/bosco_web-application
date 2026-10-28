@@ -1,0 +1,70 @@
+{% load static %}<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Стипендії{% endblock %} · {{ SITE_NAME }}</title>
+<link rel="icon" type="image/png" href="{% static 'scholarships/logo.png' %}">
+<link rel="stylesheet" href="{% static 'scholarships/theme.css' %}?v=4">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="{% url 'home' %}" title="{{ SITE_FULL_NAME }}"><img src="{% static 'scholarships/logo.png' %}" alt="{{ SITE_NAME }}" width="170" height="60"></a>
+  <nav>
+    <a href="{% url 'home' %}">Головна</a>
+    <a href="{% url 'scholars' %}">Стипендіати</a>
+    {% if user.is_authenticated %}
+      {% if user.is_staff %}
+        <a class="staff" href="{% url 'panel_home' %}">{% if user.is_superuser %}Панель адміністратора{% else %}Панель модератора{% endif %}{% if PENDING_COUNT %} <span class="pill">{{ PENDING_COUNT }}</span>{% endif %}</a>
+        <a href="{% url 'panel_applications' %}">Заявки</a>
+      {% else %}
+        <a href="{% url 'apply' %}">Подати заявку</a>
+        <a href="{% url 'my_applications' %}">Мої заявки</a>
+        <a href="{% url 'profile' %}">Профіль</a>
+        <a href="{% url 'dashboard' %}">Кабінет</a>
+      {% endif %}
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Вийти ({{ user.username }}{% if ROLE_LABEL %} · {{ ROLE_LABEL }}{% endif %})</button></form>
+    {% else %}
+      <a href="{% url 'login' %}">Увійти</a>
+      <a href="{% url 'register' %}">Реєстрація</a>
+    {% endif %}
+  </nav>
+</div></header>
+<main><div class="wrap">
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</div></main>
+<footer class="site">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h4>{{ SITE_NAME }} · Стипендії</h4>
+        <p>{{ SITE_FULL_NAME }}.</p>
+        <p>Система управління стипендіальними програмами для учнів центру.</p>
+      </div>
+      <div>
+        <h4>Розділи</h4>
+        <a href="{% url 'home' %}">Головна</a>
+        <a href="{% url 'scholars' %}">Стипендіати</a>
+        {% if user.is_authenticated and not user.is_staff %}
+          <a href="{% url 'apply' %}">Подати заявку</a>
+          <a href="{% url 'dashboard' %}">Особистий кабінет</a>
+        {% elif user.is_staff %}
+          <a href="{% url 'panel_home' %}">Панель адміністратора</a>
+          <a href="{% url 'panel_applications' %}">Заявки</a>
+        {% else %}
+          <a href="{% url 'register' %}">Реєстрація</a>
+          <a href="{% url 'login' %}">Увійти</a>
+        {% endif %}
+      </div>
+      <div>
+        <h4>Графік</h4>
+        <p>Прийом заявок: 1 вересня – 24 грудня</p>
+        <p>Оголошення стипендій: 31 січня</p>
+      </div>
+    </div>
+    <div class="bottom">© {% now "Y" %} {{ SITE_NAME }}. Усі права захищені.</div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Облік стипендії{% endblock %}
+{% block content %}
+<p><a href="{% url 'panel_scholarships' %}">← До списку стипендій</a></p>
+<div class="profile-head">{% include "scholarships/_avatar.html" with profile=scholarship.student.profile size="xl" %}<h1>{{ scholarship.program.name }}</h1></div>
+<p class="muted">{{ scholarship.student.profile.full_name }}{% if scholarship.sponsor %} · засновник: {{ scholarship.sponsor }}{% endif %} · група {{ scholarship.student.profile.group|default:"—" }}</p>
+<div class="card">
+  <div class="nums"><span>Призначено: <strong>{{ scholarship.amount|floatformat:2 }} грн</strong></span><span>Витрачено {{ scholarship.window_label }}: <strong>{{ scholarship.spent|floatformat:2 }} грн</strong></span><span>Залишок {{ scholarship.window_label }}: <strong>{{ scholarship.balance|floatformat:2 }} грн</strong></span></div>
+  <div class="bar"><div style="width:{{ scholarship.percent_used }}%"></div></div>
+</div>
+
+<h2>Записати витрату</h2>
+<div class="card form-box">
+  <p class="muted">Наприклад: «Оплата модуля», «Оплата проживання в колегіумі».</p>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn" type="submit">Записати</button></form>
+</div>
+
+<h2>Історія витрат</h2>
+<div class="scroll"><table>
+  <tr><th>Дата</th><th>Опис</th><th>К-сть</th><th>Сума</th></tr>
+  {% for t in transactions %}<tr><td>{{ t.created_at|date:"d.m.Y H:i" }}</td><td>{{ t.description }}</td><td>{{ t.quantity }}</td><td>{{ t.amount|floatformat:2 }} грн</td></tr>
+  {% empty %}<tr><td colspan="4" class="muted">Витрат ще не було.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

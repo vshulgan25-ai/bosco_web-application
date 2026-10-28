@@ -1,0 +1,27 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Заявка{% endblock %}
+{% block content %}
+<p><a href="{% url 'panel_applications' %}">← До списку заявок</a></p>
+<div class="profile-head">{% include "scholarships/_avatar.html" with profile=application.student.profile size="xl" %}<h1>{{ application.student.profile.full_name }}</h1></div>
+<p class="muted">Група {{ application.student.profile.group|default:"—" }} · тел. {{ application.student.profile.phone|default:"—" }} · {{ application.student.email|default:"email не вказано" }}<br>
+{{ application.period.title }} · подано {{ application.submitted_at|date:"d.m.Y H:i" }}</p>
+
+<div class="card"><h3>Мотиваційний лист</h3><p>{{ application.motivation|linebreaksbr }}</p>
+  <h3>Портфоліо</h3>
+  {% for p in application.portfolio.all %}<div><a href="{{ p.file.url }}" target="_blank">{{ p.title }}</a></div>{% empty %}<span class="muted">Файлів немає.</span>{% endfor %}
+</div>
+
+<h2>Рішення по кожній стипендії</h2>
+{% for c in application.choices.all %}
+<div class="card" style="margin-bottom:14px">
+  <h3>{{ c.program.name }} <span class="badge {{ c.status }}">{{ c.get_status_display }}</span></h3>
+  <p class="muted">Сума: {{ c.program.amount|floatformat:"-2" }} грн {{ c.program.amount_note }}{% if c.decided_at %} · рішення від {{ c.decided_at|date:"d.m.Y H:i" }}{% endif %}</p>
+  <form method="post" class="decide">{% csrf_token %}
+    <input type="hidden" name="choice_id" value="{{ c.pk }}">
+    <textarea name="comment" rows="2" placeholder="Коментар для учня (необов’язково)">{{ c.comment }}</textarea>
+    <button class="btn sm" name="action" value="approve">Схвалити</button>
+    <button class="btn sm bad" name="action" value="reject">Відхилити</button>
+  </form>
+</div>
+{% endfor %}
+{% endblock %}

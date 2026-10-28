@@ -1,0 +1,12 @@
+<div class="scroll"><table class="scholars">
+  <tr><th></th><th>Стипендіат</th><th>Група</th><th>Курс</th><th>Види стипендії</th></tr>
+  {% for row in scholars %}
+  <tr>
+    <td class="ava">{% include "scholarships/_avatar.html" with profile=row.student.profile size="" %}</td>
+    <td><strong>{{ row.student.profile.full_name }}</strong></td>
+    <td>{{ row.student.profile.group|default:"—" }}</td>
+    <td>{% if row.student.profile.course %}{{ row.student.profile.course }}{% else %}—{% endif %}</td>
+    <td>{% for p in row.programs %}<span class="chip {{ p.kind }}">{{ p.get_kind_display }}</span> {% endfor %}</td>
+  </tr>
+  {% empty %}<tr><td colspan="5" class="muted">Нікого не знайдено.</td></tr>{% endfor %}
+</table></div>

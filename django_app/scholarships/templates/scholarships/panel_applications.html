@@ -1,0 +1,23 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Заявки{% endblock %}
+{% block content %}
+<h1>Заявки учнів</h1>
+<form method="get" class="filters">
+  <input type="text" name="q" value="{{ q }}" placeholder="Прізвище, ім'я, група…">
+  <select name="status"><option value="">Усі статуси</option>
+    {% for val, label in statuses %}<option value="{{ val }}" {% if val == status %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <select name="program"><option value="">Усі стипендії</option>
+    {% for p in programs %}<option value="{{ p.pk }}" {% if p.pk|stringformat:"s" == program %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select>
+  <button class="btn sm" type="submit">Фільтрувати</button>
+  <a class="btn sm sec" href="{% url 'panel_export' %}?status={{ status }}&program={{ program }}&q={{ q }}">Експорт у CSV</a>
+</form>
+<div class="scroll"><table>
+  <tr><th>Учень</th><th>Група</th><th>Набір</th><th>Стипендії та статуси</th><th>Подано</th><th></th></tr>
+  {% for a in applications %}
+  <tr><td>{{ a.student.get_full_name|default:a.student.username }}</td><td>{{ a.student.profile.group }}</td><td>{{ a.period.title }}</td>
+    <td>{% for c in a.choices.all %}<div>{{ c.program.name }} <span class="badge {{ c.status }}">{{ c.get_status_display }}</span></div>{% endfor %}</td>
+    <td>{{ a.submitted_at|date:"d.m.Y" }}</td>
+    <td><a class="btn sm" href="{% url 'panel_application_detail' a.pk %}">Відкрити</a></td></tr>
+  {% empty %}<tr><td colspan="6" class="muted">Заявок не знайдено.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

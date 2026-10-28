@@ -1,0 +1,49 @@
+{% extends "scholarships/base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Стипендіальні програми {{ SITE_NAME }}</h1>
+  <p>Подайте заявку з портфоліо на одну, дві або всі стипендії, дізнайтеся результат і переглядайте свої стипендії в особистому кабінеті: навчання, колегіум та харчування в кафе «{{ CAFE_NAME }}».</p>
+  {% if user.is_authenticated and not user.is_staff %}
+    <a class="btn light" href="{% url 'apply' %}">Подати заявку</a>
+    <a class="btn light" href="{% url 'dashboard' %}">Мій кабінет</a>
+  {% elif user.is_staff %}
+    <a class="btn light" href="{% url 'panel_home' %}">Панель адміністратора</a>
+  {% else %}
+    <a class="btn light" href="{% url 'register' %}">Створити акаунт</a>
+    <a class="btn light" href="{% url 'login' %}">Увійти</a>
+  {% endif %}
+</section>
+
+{% if period %}
+<h2 style="margin-top:0">{{ period.title }}</h2>
+<div class="timeline">
+  <div>Прийом заявок<b>{{ period.start_date|date:"d E" }} – {{ period.end_date|date:"d E Y" }}</b>{% if period_open %}<span class="badge approved">Відкрито</span>{% else %}<span class="badge rejected">Закрито</span>{% endif %}</div>
+  <div>Розгляд заявок<b>комісією</b><span class="muted">заявки перебувають на розгляді</span></div>
+  <div>Оголошення стипендій<b>{{ period.results_date|date:"d E Y" }}</b><span class="muted">результати з’являться в кабінеті</span></div>
+</div>
+{% else %}
+<div class="notice warn">Наразі набір на стипендії не оголошено. Слідкуйте за оновленнями.</div>
+{% endif %}
+
+<h2>Види стипендій</h2>
+<div class="grid">
+  {% for p in programs %}
+  <div class="card"><h3>{{ p.name }}</h3>
+    <p>{{ p.description }}</p>
+    <p class="big">{{ p.amount|floatformat:"-2" }} грн <span class="muted" style="font-size:1rem;font-weight:400">{{ p.amount_note }}</span></p></div>
+  {% empty %}<p class="muted">Програми ще не додані.</p>{% endfor %}
+</div>
+<div class="notice">Можна подати заявку на <strong>одну, дві або всі три</strong> стипендії одночасно.</div>
+
+<h2>Стипендіати {{ scholars_year }}</h2>
+{% include "scholarships/_scholar_table.html" with scholars=scholars %}
+<p><a href="{% url 'scholars' %}">Усі стипендіати →</a></p>
+
+<h2>Як це працює</h2>
+<div class="grid">
+  <div class="card"><h3>1. Реєстрація</h3><p>Створіть особистий акаунт учня.</p></div>
+  <div class="card"><h3>2. Заявка і портфоліо</h3><p>Оберіть стипендії, напишіть мотиваційний лист і завантажте грамоти та сертифікати.</p></div>
+  <div class="card"><h3>3. Розгляд</h3><p>Адміністратор розглядає кожну заявку та приймає рішення по кожному виду стипендії.</p></div>
+  <div class="card"><h3>4. Особистий кабінет</h3><p>Переглядайте призначені стипендії та результати розгляду заявок.</p></div>
+</div>
+{% endblock %}

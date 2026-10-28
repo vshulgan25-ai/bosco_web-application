@@ -1,0 +1,23 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Мої заявки{% endblock %}
+{% block content %}
+<h1>Мої заявки</h1>
+{% for a in applications %}
+<div class="card" style="margin-bottom:16px">
+  <h3>{{ a.period.title }}</h3>
+  <p class="muted">Подано {{ a.submitted_at|date:"d.m.Y H:i" }}</p>
+  <div class="scroll"><table>
+    <tr><th>Стипендія</th><th>Статус</th></tr>
+    {% for c in a.choices.all %}
+    <tr><td>{{ c.program.name }}</td>
+      <td><span class="badge {{ c.public_status }}">{{ c.public_status_display }}</span>
+        {% if c.public_status == "pending" %}<div class="muted">Результати: {{ a.period.results_date|date:"d.m.Y" }}</div>
+        {% elif c.comment %}<div class="muted">{{ c.comment }}</div>{% endif %}</td></tr>
+    {% endfor %}
+  </table></div>
+  <p><strong>Портфоліо:</strong> {% for p in a.portfolio.all %}<a href="{{ p.file.url }}" target="_blank">{{ p.title }}</a>{% if not forloop.last %}, {% endif %}{% empty %}<span class="muted">немає файлів</span>{% endfor %}</p>
+</div>
+{% empty %}
+<div class="notice">Ви ще не подавали заявок. <a href="{% url 'apply' %}">Подати заявку</a></div>
+{% endfor %}
+{% endblock %}

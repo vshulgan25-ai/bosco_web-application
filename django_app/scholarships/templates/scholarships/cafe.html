@@ -1,0 +1,43 @@
+{% extends "scholarships/base.html" %}
+{% block title %}{{ CAFE_NAME }}{% endblock %}
+{% block content %}
+<h1>Кафе «{{ CAFE_NAME }}»</h1>
+{% if not scholarship %}
+  <div class="notice warn">У вас немає стипендії на харчування в кафе «{{ CAFE_NAME }}».</div>
+{% else %}
+  <div class="card">
+    <div class="nums"><span>Доступно сьогодні (ліміт {{ scholarship.amount|floatformat:"-2" }} грн на день):</span><span class="big">{{ scholarship.balance|floatformat:2 }} грн</span></div>
+    <div class="bar"><div style="width:{{ scholarship.percent_used }}%"></div></div>
+    <div class="muted">Сьогодні витрачено {{ scholarship.spent|floatformat:2 }} з {{ scholarship.amount|floatformat:2 }} грн. Завтра ліміт оновиться.</div>
+  </div>
+
+  <h2>Меню</h2>
+  <form method="post" class="card">{% csrf_token %}
+    {% for item in items %}
+    <div class="menu-row">
+      <div><strong>{{ item.name }}</strong><div class="muted">{{ item.description }}</div></div>
+      <div>{{ item.price|floatformat:2 }} грн &nbsp;
+        <input type="number" min="0" max="20" value="0" name="qty_{{ item.id }}" data-price="{{ item.price|stringformat:'.2f' }}" class="qty"></div>
+    </div>
+    {% empty %}<p class="muted">Меню порожнє.</p>{% endfor %}
+    <p style="margin-top:16px"><strong>Разом: <span id="total">0.00</span> грн</strong> <span class="muted">· доступно {{ scholarship.balance|floatformat:2 }} грн</span></p>
+    <button class="btn" type="submit">Оформити замовлення</button>
+  </form>
+
+  <h2>Сьогоднішні покупки</h2>
+  {% if today_purchases %}
+  <div class="scroll"><table>
+    <tr><th>Час</th><th>Позиція</th><th>К-сть</th><th>Сума</th></tr>
+    {% for t in today_purchases %}<tr><td>{{ t.created_at|date:"H:i" }}</td><td>{{ t.description }}</td><td>{{ t.quantity }}</td><td>{{ t.amount|floatformat:2 }} грн</td></tr>{% endfor %}
+  </table></div>
+  <p>Сьогодні витрачено: <strong>{{ today_total|floatformat:2 }} грн</strong></p>
+  {% else %}<p class="muted">Сьогодні покупок ще не було.</p>{% endif %}
+  <p><a href="{% url 'scholarship_detail' scholarship.pk %}">Уся історія витрат →</a></p>
+
+  <script>
+    const qs=document.querySelectorAll('.qty'),t=document.getElementById('total');
+    function calc(){let s=0;qs.forEach(q=>{s+=(parseFloat(q.dataset.price)||0)*(parseInt(q.value)||0)});t.textContent=s.toFixed(2)}
+    qs.forEach(q=>q.addEventListener('input',calc));
+  </script>
+{% endif %}
+{% endblock %}

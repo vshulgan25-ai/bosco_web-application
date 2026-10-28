@@ -1,0 +1,15 @@
+{% extends "scholarships/base.html" %}
+{% block title %}Стипендіати{% endblock %}
+{% block content %}
+<h1>Стипендіати {{ year }}</h1>
+<p class="muted">Учні {{ SITE_FULL_NAME }}, яким призначено стипендію за результатами рішення комісії.</p>
+<form method="get" class="filters">
+  <input type="text" name="q" value="{{ q }}" placeholder="Прізвище, ім'я, група…">
+  <select name="kind"><option value="">Усі види стипендій</option>
+    {% for val, label in kinds %}<option value="{{ val }}" {% if val == kind %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  {% if years|length > 1 %}<select name="year">{% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>{% endif %}
+  <button class="btn sm" type="submit">Знайти</button>
+</form>
+<p class="muted">Показано стипендіатів: <strong>{{ scholars|length }}</strong></p>
+{% include "scholarships/_scholar_table.html" with scholars=scholars %}
+{% endblock %}
