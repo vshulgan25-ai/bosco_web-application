@@ -17,7 +17,7 @@
 | Напрям | Опис |
 |--------|------|
 | Навчання в закладі | Стипендія за навчальні досягнення |
-| Колегіум | Стипендія для вступу до коледжу |
+| Колегіум | Стипендія для проживання в колегіумі |
 | Кафе «Мама Маргарита» | Безкоштовне харчування |
 
 ---
@@ -27,7 +27,7 @@
 | Компонент | Технологія |
 |-----------|-----------|
 | Backend   | Python 3.10 · Django 5.2 |
-| База даних | MySQL (за замовчуванням) або SQLite (для розробки) |
+| База даних | SQLite (розробка) / MySQL (продакшн) |
 | Frontend  | Django Templates · HTML/CSS |
 | Медіафайли | Pillow (обробка зображень) |
 | Імпорт даних | openpyxl (Excel) |
@@ -62,28 +62,42 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Налаштувати змінні середовища
-
-Скопіюйте `.env.example` у `.env` і відредагуйте за потребою:
+### 4. Створити файл `.env`
 
 ```bash
-copy .env.example .env   # Windows
-# або
-cp .env.example .env     # Linux/macOS
+# Windows
+copy .env.example .env
+
+# Linux / macOS
+cp .env.example .env
 ```
 
-Для **швидкого локального запуску без MySQL** достатньо додати у `.env`:
+> **Важливо:** `.env.example` вже містить `DB_ENGINE=sqlite` — додаткових налаштувань **не потрібно**. Файл `.env` буде автоматично прочитаний при запуску.
 
-```
-DB_ENGINE=sqlite
-DJANGO_DEBUG=True
-```
-
-### 5. Застосувати міграції та запустити
+### 5. Застосувати міграції
 
 ```bash
 python manage.py migrate
-python manage.py createsuperuser   # створити адміністратора
+```
+
+### 6. Завантажити демо-дані (необов'язково)
+
+```bash
+python manage.py seed_demo
+```
+
+Після цього в системі будуть створені:
+
+| Логін | Пароль | Роль |
+|-------|--------|------|
+| `admin` | `admin12345` | Адміністратор |
+| `moderator` | `moderator12345` | Модератор (staff) |
+| `shulhan.veronika` | `BoscoStudent2025!` | Учень-стипендіат |
+| `fedash.tereza` | `BoscoStudent2025!` | Учень-стипендіат |
+
+### 7. Запустити сервер
+
+```bash
 python manage.py runserver
 ```
 
@@ -93,17 +107,17 @@ python manage.py runserver
 
 ## Змінні середовища (`.env`)
 
-| Змінна | За замовчуванням | Опис |
-|--------|-----------------|------|
-| `DJANGO_SECRET_KEY` | *(вбудований)* | Секретний ключ Django — **замінити у production** |
+| Змінна | Значення за замовчуванням | Опис |
+|--------|--------------------------|------|
+| `DJANGO_SECRET_KEY` | *(dev-ключ)* | Секретний ключ Django |
 | `DJANGO_DEBUG` | `True` | Режим відладки |
 | `DJANGO_ALLOWED_HOSTS` | `127.0.0.1,localhost` | Дозволені хости |
-| `DB_ENGINE` | `mysql` | `mysql` або `sqlite` |
-| `DB_NAME` | `bosco_scholarships` | Назва бази даних |
-| `DB_USER` | `bosco` | Користувач БД |
-| `DB_PASSWORD` | `bosco_password` | Пароль БД |
-| `DB_HOST` | `127.0.0.1` | Хост БД |
-| `DB_PORT` | `3306` | Порт БД |
+| `DB_ENGINE` | `sqlite` | `sqlite` або `mysql` |
+| `DB_NAME` | `bosco_scholarships` | Назва бази даних (тільки для MySQL) |
+| `DB_USER` | `bosco` | Користувач БД (тільки для MySQL) |
+| `DB_PASSWORD` | — | Пароль БД (тільки для MySQL) |
+| `DB_HOST` | `127.0.0.1` | Хост БД (тільки для MySQL) |
+| `DB_PORT` | `3306` | Порт БД (тільки для MySQL) |
 
 ---
 
@@ -112,17 +126,27 @@ python manage.py runserver
 ```
 django_app/
 ├── bosco/                  # Налаштування Django (settings, urls, wsgi)
+│   ├── settings.py         # Конфігурація (читає .env автоматично)
+│   ├── urls.py
+│   └── wsgi.py
 ├── scholarships/           # Основний застосунок
 │   ├── models.py           # Моделі: StudentProfile, Program, Application, Scholarship
 │   ├── views.py            # Views: кабінет учня, панель адміністратора
 │   ├── forms.py            # Форми реєстрації, заявки, профілю
 │   ├── urls.py             # URL-маршрути
+│   ├── data.py             # Константи і демо-дані
 │   ├── templates/          # HTML-шаблони
 │   ├── static/             # CSS, зображення
-│   └── migrations/         # Міграції БД
+│   ├── migrations/         # Міграції БД
+│   └── management/
+│       └── commands/
+│           ├── seed_demo.py        # Заповнення демо-даними
+│           └── import_students.py  # Імпорт з Excel
+├── sql/                    # SQL-скрипти для MySQL
 ├── manage.py
 ├── requirements.txt
-└── .env.example
+├── .env.example            # Зразок конфігурації
+└── .env                    # Локальна конфігурація (не в git)
 ```
 
 ---
