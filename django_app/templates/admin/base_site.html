@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}{% load static %}
+{% block branding %}<h1 id="site-name"><a href="{% url 'admin:index' %}"><img src="{% static 'scholarships/logo.png' %}" alt="Bosco Center" style="height:38px;background:#fff;padding:3px 8px;border-radius:6px;vertical-align:middle"></a></h1>{% endblock %}
+{% block extrastyle %}{{ block.super }}
+<style>
+:root{--primary:#2e7d32;--secondary:#004b00;--accent:#a5d6a7;--primary-fg:#fff;
+--header-color:#e8f5e9;--header-branding-color:#fff;--header-bg:#004b00;--header-link-color:#fff;
+--link-fg:#2e7d32;--link-hover-color:#004b00;--link-selected-fg:#004b00;
+--button-bg:#2e7d32;--button-hover-bg:#004b00;--default-button-bg:#004b00;--default-button-hover-bg:#2e7d32;
+--object-tools-bg:#2e7d32;--object-tools-hover-bg:#004b00;
+--breadcrumbs-bg:#2e7d32;--breadcrumbs-fg:#c8f0cb;--breadcrumbs-link-fg:#fff;
+--module-header-bg:#2e7d32;--selected-row:#e8f5e9;--hairline-color:#dcebdc}
+#header{border-top:6px solid #2b2b2b}
+div.breadcrumbs{background:#2e7d32}
+.module h2,.module caption,.inline-group h2{background:#2e7d32;color:#fff}
+.button,input[type=submit],input[type=button],.submit-row input,a.button{background:#2e7d32;color:#fff}
+.button.default,input[type=submit].default,.submit-row input.default{background:#004b00}
+</style>
+{% endblock %}
