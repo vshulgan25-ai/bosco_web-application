@@ -1,9 +1,11 @@
 import csv
+from functools import wraps
 from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
+from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
@@ -25,7 +27,16 @@ from django.views.generic import DetailView
 
 from . import data
 
-staff_required = staff_member_required(login_url="login")
+def staff_required(view):
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect_to_login(request.get_full_path(), login_url=reverse("login"))
+        if not request.user.is_staff:
+            messages.error(request, "Цей розділ доступний лише модераторам.")
+            return redirect("dashboard")
+        return view(request, *args, **kwargs)
+    return wrapper
 
 
 def superuser_required(view):
