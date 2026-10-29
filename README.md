@@ -27,7 +27,7 @@
 | Компонент | Технологія |
 |-----------|-----------|
 | Backend   | Python 3.10 + Django 5.2 |
-| База даних | SQLite (розробка) / MySQL (продакшн) |
+| База даних | MySQL 8.0 |;
 | Frontend  | Django Templates + HTML/CSS |
 | Медіафайли | Pillow (обробка фотографій) |
 | Імпорт даних | openpyxl (Excel) |
@@ -72,7 +72,7 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-> **Увага:** `.env.example` вже містить `DB_ENGINE=sqlite` — тобто запуск **без MySQL**. У `.env` буде автоматично зчитано всі змінні.
+> Перед міграціями створіть базу: виконайте скрипт sql/01_create_database.sql у MySQL.
 
 ### 5. Застосування міграцій
 
@@ -115,7 +115,6 @@ python manage.py runserver
 | `DJANGO_SECRET_KEY` | *(dev-ключ)* | Секретний ключ Django |
 | `DJANGO_DEBUG` | `True` | Режим відладки |
 | `DJANGO_ALLOWED_HOSTS` | `127.0.0.1,localhost` | Дозволені хости |
-| `DB_ENGINE` | `sqlite` | `sqlite` або `mysql` |
 | `DB_NAME` | `bosco_scholarships` | Ім'я бази даних (тільки для MySQL) |
 | `DB_USER` | `bosco` | Користувач БД (тільки для MySQL) |
 | `DB_PASSWORD` | — | Пароль БД (тільки для MySQL) |
@@ -166,6 +165,9 @@ ApplicationChoice ── Application + Program  [pending / approved / rejected]
 PortfolioItem   ──── Application
 Scholarship     ──── User + Program + ApplicationChoice
 ```
+---
+## розділ про тести:
+python manage.py test scholarships.tests -v 2
 
 ---
 
