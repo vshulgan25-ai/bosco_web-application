@@ -82,6 +82,7 @@ if env("DB_ENGINE", "mysql").lower() == "sqlite":
         }
     }
 else:
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
